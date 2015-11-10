@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:step1_read_print/step1_read_print.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:step0_repl/step0_repl.xcodeproj">
    </FileRef>
 </Workspace>
