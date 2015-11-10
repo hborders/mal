@@ -1,0 +1,8 @@
+DerivedData
+xcuserdata
+*.xcscmblueprint
+.DS_Store
+# the root directory ignores all subdirectories named like the tests, but
+# this violates idiomatic Xcode project layout. Unignore these directories.
+!step0_repl
+
