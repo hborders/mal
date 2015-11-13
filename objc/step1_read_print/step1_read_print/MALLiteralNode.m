@@ -38,7 +38,7 @@
     self = [super init];
     if (self) {
         _parentContainerNode = parentContainerNode;
-        _chunkNodes = [MALChunkNodeScanner chunkNodesFromString:@"quote"];
+        _chunkNodes = [MALChunkNodeScanner chunkNodesFromString:string];
     }
     return self;
 }
@@ -58,6 +58,10 @@
 
 - (nonnull id<MALContainerNode>)containerNodeAfterConsumingChunkNode:(nonnull MALChunkNode *)chunkNode {
     if ([chunkNode isEqual:[MALChunkNode spaceChunkNode]]) {
+        id<MALContainerNode> parentContainerNode = self.parentContainerNode;
+        NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
+        return parentContainerNode;
+    } else if ([chunkNode isEqual:[MALChunkNode commaChunkNode]]) {
         id<MALContainerNode> parentContainerNode = self.parentContainerNode;
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return parentContainerNode;

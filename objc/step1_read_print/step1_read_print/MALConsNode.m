@@ -9,7 +9,9 @@
 #import "MALConsNode.h"
 #import "MALChunkNode.h"
 #import "MALLiteralNode.h"
-#import "MALQuoteNode.h"
+#import "MALQuotedConsStartNode.h"
+#import "MALUnquotedConsStartNode.h"
+#import "MALStringNode.h"
 
 @interface MALConsNode ()
 
@@ -47,6 +49,8 @@
 - (nonnull id<MALContainerNode>)containerNodeAfterConsumingChunkNode:(nonnull MALChunkNode *)chunkNode {
     if ([chunkNode isEqual:[MALChunkNode spaceChunkNode]]) {
         return self;
+    } else if ([chunkNode isEqual:[MALChunkNode commaChunkNode]]) {
+        return self;
     } else if ([chunkNode isEqual:[MALChunkNode openParensChunkNode]]) {
         MALConsNode *consNode = [[MALConsNode alloc] initWithParentContainerNode:self];
         [self.nodes addObject:consNode];
@@ -56,20 +60,23 @@
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return parentContainerNode;
     } else if ([chunkNode isEqual:[MALChunkNode singleQuoteChunkNode]]) {
-        MALQuoteNode *quoteNode = [[MALQuoteNode alloc] initWithParentContainerNode:self
-                                                                               type:MALQuoteNodeTypeQuote];
-        [self.nodes addObject:quoteNode];
-        return quoteNode;
+        MALQuotedConsStartNode *quoteQuotedConsStartNode = [[MALQuotedConsStartNode alloc] initWithParentContainerNode:self
+                                                                                                 type:MALQuotedConsStartNodeTypeQuote];
+        [self.nodes addObject:quoteQuotedConsStartNode];
+        return quoteQuotedConsStartNode;
     } else if ([chunkNode isEqual:[MALChunkNode backQuoteChunkNode]]) {
-        MALQuoteNode *quoteNode = [[MALQuoteNode alloc] initWithParentContainerNode:self
-                                                                               type:MALQuoteNodeTypeQuasiQuote];
-        [self.nodes addObject:quoteNode];
-        return quoteNode;
+        MALQuotedConsStartNode *quasiQuoteConsNode = [[MALQuotedConsStartNode alloc] initWithParentContainerNode:self
+                                                                                                type:MALQuotedConsStartNodeTypeQuasiQuote];
+        [self.nodes addObject:quasiQuoteConsNode];
+        return quasiQuoteConsNode;
     } else if ([chunkNode isEqual:[MALChunkNode tildeChunkNode]]) {
-        MALQuoteNode *quoteNode = [[MALQuoteNode alloc] initWithParentContainerNode:self
-                                                                               type:MALQuoteNodeTypeUnquote];
-        [self.nodes addObject:quoteNode];
-        return quoteNode;
+        MALUnquotedConsStartNode *unquoteQuoteConsNode = [[MALUnquotedConsStartNode alloc] initWithParentContainerNode:self];
+        [self.nodes addObject:unquoteQuoteConsNode];
+        return unquoteQuoteConsNode;
+    } else if ([chunkNode isEqual:[MALChunkNode doubleQuoteChunkNode]]) {
+        MALStringNode *stringNode = [[MALStringNode alloc] initWithParentContainerNode:self];
+        [self.nodes addObject:stringNode];
+        return stringNode;
     } else {
         MALLiteralNode *literalNode = [[MALLiteralNode alloc] initWithParentContainerNode:self
                                                                                 chunkNode:chunkNode];
@@ -89,7 +96,7 @@
     NSMutableString *nodeDescription = [[nodeDescriptions componentsJoinedByString:@" "] mutableCopy];
     if (!self.rootNode) {
         [nodeDescription insertString:@"("
-                                   atIndex:0];
+                              atIndex:0];
         [nodeDescription appendString:@")"];
     }
     return nodeDescription;

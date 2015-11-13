@@ -21,5 +21,9 @@
 + (nonnull instancetype)singleQuoteChunkNode;
 + (nonnull instancetype)backQuoteChunkNode;
 + (nonnull instancetype)tildeChunkNode;
++ (nonnull instancetype)doubleQuoteChunkNode;
++ (nonnull instancetype)backslashChunkNode;
++ (nonnull instancetype)commaChunkNode;
++ (nonnull instancetype)atChunkNode;
 
 @end

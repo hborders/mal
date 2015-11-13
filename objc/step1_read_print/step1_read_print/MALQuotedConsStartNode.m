@@ -1,51 +1,43 @@
 //
-//  MALQuoteNode.m
+//  MALQuotedConsStartNode.m
 //  step1_read_print
 //
-//  Created by Heath Borders on 11/10/15.
+//  Created by Heath Borders on 11/12/15.
 //  Copyright © 2015 Heath Borders. All rights reserved.
 //
 
-#import "MALQuoteNode.h"
+#import "MALQuotedConsStartNode.h"
 #import "MALConsNode.h"
 #import "MALLiteralNode.h"
 #import "MALChunkNode.h"
-#import "MALChunkNodeScanner.h"
 
-@interface MALQuoteNode ()
+@interface MALQuotedConsStartNode ()
 
 @property (nonatomic) MALConsNode * _Nonnull consNode;
-@property (nonatomic) MALChunkNode * _Nullable ignorableChunkNode;
 
 @end
 
-@implementation MALQuoteNode
+@implementation MALQuotedConsStartNode
 
 #pragma mark - init/dealloc
 
 - (nonnull instancetype)initWithParentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode
-                                               type:(MALQuoteNodeType)type {
+                                               type:(MALQuotedConsStartNodeType)type {
     self = [super init];
     if (self) {
         _consNode = [[MALConsNode alloc] initWithParentContainerNode:parentContainerNode];
         MALLiteralNode *quoteLiteralNode;
         switch (type) {
-            case MALQuoteNodeTypeQuote:
-                quoteLiteralNode = [[MALLiteralNode alloc] initWithParentContainerNode:self
+            case MALQuotedConsStartNodeTypeQuote:
+                quoteLiteralNode = [[MALLiteralNode alloc] initWithParentContainerNode:_consNode
                                                                                 string:@"quote"];
                 break;
-            case MALQuoteNodeTypeQuasiQuote:
-                quoteLiteralNode = [[MALLiteralNode alloc] initWithParentContainerNode:self
+            case MALQuotedConsStartNodeTypeQuasiQuote:
+                quoteLiteralNode = [[MALLiteralNode alloc] initWithParentContainerNode:_consNode
                                                                                 string:@"quasiquote"];
-                break;
-            case MALQuoteNodeTypeUnquote:
-                quoteLiteralNode = [[MALLiteralNode alloc] initWithParentContainerNode:self
-                                                                                string:@"unquote"];
                 break;
         }
         [_consNode appendLiteralNode:quoteLiteralNode];
-        
-        _ignorableChunkNode = [MALChunkNode openParensChunkNode];
     }
     return self;
 }
@@ -59,12 +51,7 @@
 #pragma mark - MALContainerNode
 
 - (nonnull id<MALContainerNode>)containerNodeAfterConsumingChunkNode:(nonnull MALChunkNode *)chunkNode {
-    if ([self.ignorableChunkNode isEqual:chunkNode]) {
-        self.ignorableChunkNode = nil;
-        return self;
-    } else {
-        return [self.consNode containerNodeAfterConsumingChunkNode:chunkNode];
-    }
+    return [self.consNode containerNodeAfterConsumingChunkNode:chunkNode];
 }
 
 @end
