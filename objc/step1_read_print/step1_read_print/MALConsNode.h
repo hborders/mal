@@ -11,10 +11,16 @@
 
 @class MALLiteralNode;
 
+typedef NS_ENUM(NSInteger, MALConsNodeType) {
+    MALConsNodeTypeList,
+    MALConsNodeTypeVector,
+};
+
 @interface MALConsNode : NSObject<MALContainerNode>
 
 - (nonnull instancetype)init;
-- (nonnull instancetype)initWithParentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode;
+- (nonnull instancetype)initWithType:(MALConsNodeType)type
+                 parentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode;
 
 - (void)appendLiteralNode:(nonnull MALLiteralNode *)literalNode;
 

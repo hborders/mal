@@ -25,5 +25,7 @@
 + (nonnull instancetype)backslashChunkNode;
 + (nonnull instancetype)commaChunkNode;
 + (nonnull instancetype)atChunkNode;
++ (nonnull instancetype)openSquareBracketChunkNode;
++ (nonnull instancetype)closeSquareBracketChunkNode;
 
 @end

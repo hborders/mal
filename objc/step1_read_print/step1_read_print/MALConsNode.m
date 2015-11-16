@@ -13,9 +13,15 @@
 #import "MALUnquotedConsStartNode.h"
 #import "MALStringNode.h"
 
+typedef NS_ENUM(NSInteger, MALConsNodePrivateType) {
+    MALConsNodePrivateTypeRoot,
+    MALConsNodePrivateTypeList,
+    MALConsNodePrivateTypeVector,
+};
+
 @interface MALConsNode ()
 
-@property (nonatomic) BOOL rootNode;
+@property (nonatomic) MALConsNodePrivateType privateType;
 @property (nonatomic, weak) id<MALContainerNode> _Nullable parentContainerNode;
 @property (nonatomic) NSMutableArray<id<MALNode>>  * _Nonnull nodes;
 
@@ -28,16 +34,24 @@
 - (nonnull instancetype)init {
     self = [super init];
     if (self) {
-        _rootNode = YES;
+        _privateType = MALConsNodePrivateTypeRoot;
         _nodes = [NSMutableArray new];
     }
     return self;
 }
 
-- (nonnull instancetype)initWithParentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode {
+- (nonnull instancetype)initWithType:(MALConsNodeType)type
+                 parentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode {
     self = [super init];
     if (self) {
-        _rootNode = NO;
+        switch (type) {
+            case MALConsNodeTypeList:
+                _privateType = MALConsNodePrivateTypeList;
+                break;
+            case MALConsNodeTypeVector:
+                _privateType = MALConsNodePrivateTypeVector;
+                break;
+        }
         _parentContainerNode = parentContainerNode;
         _nodes = [NSMutableArray new];
     }
@@ -52,10 +66,20 @@
     } else if ([chunkNode isEqual:[MALChunkNode commaChunkNode]]) {
         return self;
     } else if ([chunkNode isEqual:[MALChunkNode openParensChunkNode]]) {
-        MALConsNode *consNode = [[MALConsNode alloc] initWithParentContainerNode:self];
-        [self.nodes addObject:consNode];
-        return consNode;
+        MALConsNode *listConsNode = [[MALConsNode alloc] initWithType:MALConsNodeTypeList
+                                              parentContainerNode:self];
+        [self.nodes addObject:listConsNode];
+        return listConsNode;
+    } else if ([chunkNode isEqual:[MALChunkNode openSquareBracketChunkNode]]) {
+        MALConsNode *vectorConsNode = [[MALConsNode alloc] initWithType:MALConsNodeTypeVector
+                                              parentContainerNode:self];
+        [self.nodes addObject:vectorConsNode];
+        return vectorConsNode;
     } else if ([chunkNode isEqual:[MALChunkNode closeParensChunkNode]]) {
+        id<MALContainerNode> parentContainerNode = self.parentContainerNode;
+        NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
+        return parentContainerNode;
+    } else if ([chunkNode isEqual:[MALChunkNode closeSquareBracketChunkNode]]) {
         id<MALContainerNode> parentContainerNode = self.parentContainerNode;
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return parentContainerNode;
@@ -94,10 +118,20 @@
     }
     
     NSMutableString *nodeDescription = [[nodeDescriptions componentsJoinedByString:@" "] mutableCopy];
-    if (!self.rootNode) {
-        [nodeDescription insertString:@"("
-                              atIndex:0];
-        [nodeDescription appendString:@")"];
+    switch (self.privateType) {
+        case MALConsNodePrivateTypeRoot:
+            // don't wrap with anything
+            break;
+        case MALConsNodePrivateTypeList:
+            [nodeDescription insertString:@"("
+                                  atIndex:0];
+            [nodeDescription appendString:@")"];
+            break;
+        case MALConsNodePrivateTypeVector:
+            [nodeDescription insertString:@"["
+                                  atIndex:0];
+            [nodeDescription appendString:@"]"];
+            break;
     }
     return nodeDescription;
 }

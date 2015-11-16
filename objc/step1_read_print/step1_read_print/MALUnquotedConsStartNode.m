@@ -25,7 +25,8 @@
 - (nonnull instancetype)initWithParentContainerNode:(nonnull id<MALContainerNode>)parentContainerNode {
     self = [super init];
     if (self) {
-        _consNode = [[MALConsNode alloc] initWithParentContainerNode:parentContainerNode];
+        _consNode = [[MALConsNode alloc] initWithType:MALConsNodeTypeList
+                                  parentContainerNode:parentContainerNode];
     }
     return self;
 }

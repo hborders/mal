@@ -24,6 +24,8 @@ static MALChunkNode * _Nonnull doubleQuoteChunkNode;
 static MALChunkNode * _Nonnull backslashChunkNode;
 static MALChunkNode * _Nonnull commaChunkNode;
 static MALChunkNode * _Nonnull atChunkNode;
+static MALChunkNode * _Nonnull openSquareBracketChunkNode;
+static MALChunkNode * _Nonnull closeSquareBracketChunkNode;
 
 @implementation MALChunkNode
 
@@ -42,6 +44,8 @@ static MALChunkNode * _Nonnull atChunkNode;
         backslashChunkNode = [[MALChunkNode alloc] initWithString:@"\\"];
         commaChunkNode = [[MALChunkNode alloc] initWithString:@","];
         atChunkNode = [[MALChunkNode alloc] initWithString:@"@"];
+        openSquareBracketChunkNode = [[MALChunkNode alloc] initWithString:@"["];
+        closeSquareBracketChunkNode = [[MALChunkNode alloc] initWithString:@"]"];
     });
 }
 
@@ -116,6 +120,14 @@ static MALChunkNode * _Nonnull atChunkNode;
 
 + (nonnull instancetype)atChunkNode {
     return atChunkNode;
+}
+
++ (nonnull instancetype)openSquareBracketChunkNode {
+    return openSquareBracketChunkNode;
+}
+
++ (nonnull instancetype)closeSquareBracketChunkNode {
+    return closeSquareBracketChunkNode;
 }
 
 @end
