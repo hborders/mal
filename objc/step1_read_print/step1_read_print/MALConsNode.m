@@ -17,6 +17,7 @@ typedef NS_ENUM(NSInteger, MALConsNodePrivateType) {
     MALConsNodePrivateTypeRoot,
     MALConsNodePrivateTypeList,
     MALConsNodePrivateTypeVector,
+    MALConsNodePrivateTypeHashMap,
 };
 
 @interface MALConsNode ()
@@ -51,6 +52,9 @@ typedef NS_ENUM(NSInteger, MALConsNodePrivateType) {
             case MALConsNodeTypeVector:
                 _privateType = MALConsNodePrivateTypeVector;
                 break;
+            case MALConsNodeTypeHashMap:
+                _privateType = MALConsNodePrivateTypeHashMap;
+                break;
         }
         _parentContainerNode = parentContainerNode;
         _nodes = [NSMutableArray new];
@@ -72,14 +76,23 @@ typedef NS_ENUM(NSInteger, MALConsNodePrivateType) {
         return listConsNode;
     } else if ([chunkNode isEqual:[MALChunkNode openSquareBracketChunkNode]]) {
         MALConsNode *vectorConsNode = [[MALConsNode alloc] initWithType:MALConsNodeTypeVector
-                                              parentContainerNode:self];
+                                                    parentContainerNode:self];
         [self.nodes addObject:vectorConsNode];
         return vectorConsNode;
+    } else if ([chunkNode isEqual:[MALChunkNode openCurlyBraceChunkNode]]) {
+        MALConsNode *hashMapConsNode = [[MALConsNode alloc] initWithType:MALConsNodeTypeHashMap
+                                                    parentContainerNode:self];
+        [self.nodes addObject:hashMapConsNode];
+        return hashMapConsNode;
     } else if ([chunkNode isEqual:[MALChunkNode closeParensChunkNode]]) {
         id<MALContainerNode> parentContainerNode = self.parentContainerNode;
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return parentContainerNode;
     } else if ([chunkNode isEqual:[MALChunkNode closeSquareBracketChunkNode]]) {
+        id<MALContainerNode> parentContainerNode = self.parentContainerNode;
+        NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
+        return parentContainerNode;
+    } else if ([chunkNode isEqual:[MALChunkNode closeCurlyBraceChunkNode]]) {
         id<MALContainerNode> parentContainerNode = self.parentContainerNode;
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return parentContainerNode;
@@ -131,6 +144,11 @@ typedef NS_ENUM(NSInteger, MALConsNodePrivateType) {
             [nodeDescription insertString:@"["
                                   atIndex:0];
             [nodeDescription appendString:@"]"];
+            break;
+        case MALConsNodePrivateTypeHashMap:
+            [nodeDescription insertString:@"{"
+                                  atIndex:0];
+            [nodeDescription appendString:@"}"];
             break;
     }
     return nodeDescription;

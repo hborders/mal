@@ -27,5 +27,7 @@
 + (nonnull instancetype)atChunkNode;
 + (nonnull instancetype)openSquareBracketChunkNode;
 + (nonnull instancetype)closeSquareBracketChunkNode;
++ (nonnull instancetype)openCurlyBraceChunkNode;
++ (nonnull instancetype)closeCurlyBraceChunkNode;
 
 @end

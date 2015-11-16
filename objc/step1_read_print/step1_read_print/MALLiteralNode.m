@@ -73,6 +73,10 @@
         id<MALContainerNode> parentContainerNode = self.parentContainerNode;
         NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
         return [parentContainerNode containerNodeAfterConsumingChunkNode:chunkNode];
+    } else if ([chunkNode isEqual:[MALChunkNode closeCurlyBraceChunkNode]]) {
+        id<MALContainerNode> parentContainerNode = self.parentContainerNode;
+        NSAssert(parentContainerNode, @"self.parentContainerNode has been deallocated");
+        return [parentContainerNode containerNodeAfterConsumingChunkNode:chunkNode];
     } else {
         [self.chunkNodes addObject:chunkNode];
         return self;

@@ -14,6 +14,7 @@
 typedef NS_ENUM(NSInteger, MALConsNodeType) {
     MALConsNodeTypeList,
     MALConsNodeTypeVector,
+    MALConsNodeTypeHashMap,
 };
 
 @interface MALConsNode : NSObject<MALContainerNode>
